@@ -1,0 +1,24 @@
+name: JIRA Commit Message Check
+
+on: [push]
+
+jobs:
+  check-commit-messages:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository content
+      uses: actions/checkout@v4
+
+    - name: Check commit messages
+      run: |
+        JIRA_REGEX='\[JP-[0-9]+\]'
+        for commit in $(git rev-list $GITHUB_SHA --not --all); do
+          COMMIT_MESSAGE=$(git log --format=%B -n 1 $commit)
+          echo $COMMIT_MESSAGE
+          if ! echo "$COMMIT_MESSAGE" | grep -iqE "$JIRA_REGEX"; then
+            echo "ERROR: Commit $commit does not contain a valid JIRA issue identifier."
+            echo "Commit message: $COMMIT_MESSAGE"
+            exit 1
+          fi
+        done
