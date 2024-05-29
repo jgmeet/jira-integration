@@ -22,7 +22,7 @@ async function getStatus() {
             }
         })
 
-        // Parse response JSON
+        // Parse JSON response
         const data = await response.json();
 
         // Check if data is empty or undefined
