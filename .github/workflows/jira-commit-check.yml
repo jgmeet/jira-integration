@@ -54,18 +54,16 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Check Jira Issue Status
+    - name: Check Jira Id and Add Comment
       id: get_issue_status
       env:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
         ISSUE_ID: ${{ env.issue_id }}
-      run: node checkJiraId.js
-
-    - name: Add Comment to Jira Issue
-      env:
         COMMIT_ID: ${{ github.sha }}
         REPO_NAME: ${{ github.repository }}
         BRANCH_NAME: ${{ github.ref_name }}
-      run: node addComment.js
+      run: |
+        node checkJiraId.js
+        node addComment.js
       
