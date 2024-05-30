@@ -67,5 +67,5 @@ jobs:
         COMMIT_ID: ${{ github.sha }}
         REPO_NAME: ${{ github.repository }}
         BRANCH_NAME: ${{ github.ref_name }}
-      run: node addCommit.js
+      run: node addComment.js
       
