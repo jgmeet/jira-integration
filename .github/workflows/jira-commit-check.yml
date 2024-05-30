@@ -60,4 +60,4 @@ jobs:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
         ISSUE_ID: ${{ env.issue_id }}
-      run: node index.js
+      run: node checkJiraId.js
