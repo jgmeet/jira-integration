@@ -13,27 +13,37 @@ jobs:
     - name: Checkout repository content
       uses: actions/checkout@v2
 
-    - name: Extract Jira Issue ID from PR descritpion
-      id: extract_issue_id
+    - name: Extract Jira Issue IDs from PR description
+      id: extract_issue_ids
       run: |
-        JIRA_REGEX='#[A-Z]+-[0-9]+'
+        CM_REGEX='CM-[0-9]+'
+        JIRA_REGEX='#?[A-Z]+-[0-9]+'
+
         # Get the pull request description
         PR_DESCRIPTION="${{ github.event.pull_request.body }}"
 
         # Extract all matching JIRA IDs
-        ISSUE_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | tr -d '#' | paste -sd ',' -)
+        CM_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$CM_REGEX" | paste -sd ',' -)
+        OTHER_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | tr -d '#' | grep -vE "^${CM_REGEX}$" | paste -sd ',' -)
 
-        if [ -z "$ISSUE_IDS" ]; then
-          echo "ERROR: No valid JIRA issue identifiers found in PR description."
+        if [ -z "$CM_IDS" ]; then
+          echo "ERROR: No valid change-management JIRA issue identifiers (CM-xxxx) found in PR description."
+          exit 1
+        fi
+
+        if [ -z "$OTHER_IDS" ]; then
+          echo "ERROR: No valid other JIRA issue identifiers (#XYJF-xxxx) found in PR description."
           exit 1
         fi
 
         # Extract repo name
         REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
 
-        echo "JIRA issue IDs: $ISSUE_IDS"
+        echo "Change-management IDs: $CM_IDS"
+        echo "Other JIRA issue IDs: $OTHER_IDS"
         echo "Repo Name: $REPO_NAME"
-        echo "issue_ids=$ISSUE_IDS" >> $GITHUB_ENV
+        echo "cm_ids=$CM_IDS" >> $GITHUB_ENV
+        echo "jira_ids=$OTHER_IDS" >> $GITHUB_ENV
         echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
 
     - name: Set up Node.js
@@ -44,12 +54,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Check Jira Id's
-      id: get_issue_status
+    - name: Check Jira IDs
       env:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
-        ISSUE_IDS: ${{ env.issue_ids }}
+        CM_IDS: ${{ env.cm_ids }}
+        JIRA_IDS: ${{ env.jira_ids }}
         REPO_NAME: ${{ env.repo_name }}
-      run: |
-        node checkJiraId2.js
+      run: node checkJiraId2.js

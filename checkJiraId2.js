@@ -6,7 +6,8 @@ dotenv.config();
 
 const email = process.env.EMAIL;
 const apiToken = process.env.API_TOKEN;
-const issue_ids = process.env.ISSUE_IDS.split(',');
+const jira_ids = process.env.JIRRA_IDS.split(',');
+const cm_ids = process.env.CM_IDS.split(',');
 const repo_name = process.env.REPO_NAME;
 
 async function checkIdandRepoMapping(issue_id) {
@@ -84,10 +85,20 @@ async function checkIdandRepoMapping(issue_id) {
     return true;
 }
 
-for(let i=0; i<issue_ids.length; i++) {
-    const resp = await checkIdandRepoMapping(issue_ids[i]);
+// check provided CM ID's are correct
+for(let i=0; i<cm_ids.length; i++) {
+    const resp = await checkIdandRepoMapping(cm_ids[i]);
     if(!resp) {
-        console.log(`Check failed at issue id: ${issue_ids[i]}`)
+        console.log(`Check failed at issue id: ${cm_ids[i]}`)
+        process.exit(1);
+    }
+}
+
+// check provided JIRA ID's are correct
+for(let i=0; i<jira_ids.length; i++) {
+    const resp = await checkIdandRepoMapping(jira_ids[i]);
+    if(!resp) {
+        console.log(`Check failed at issue id: ${jira_ids[i]}`)
         process.exit(1);
     }
 }
