@@ -42,14 +42,12 @@ async function postComment() {
         });
 
         if (!response.ok) {
-            console.error(`Error: ${response.status} ${response.statusText}`);
-            process.exit(1);
+            console.log(`Error: ${response.status} ${response.statusText}`);
         } else {
             console.log('Comment added successfully');
         }
     } catch (error) {
         console.error(`Request failed: ${error}`);
-        process.exit(1);
     }
 }
 

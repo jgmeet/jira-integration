@@ -43,8 +43,12 @@ jobs:
           exit 1
         fi
 
+        # Extract repo name
+        REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
+
         echo "JIRA issue ID: $ISSUE_ID"
         echo "issue_id=$ISSUE_ID" >> $GITHUB_ENV
+        echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -61,7 +65,7 @@ jobs:
         API_TOKEN: ${{ secrets.API_TOKEN }}
         ISSUE_ID: ${{ env.issue_id }}
         COMMIT_ID: ${{ github.sha }}
-        REPO_NAME: ${{ github.repository }}
+        REPO_NAME: ${{ env.repo_name }}
         BRANCH_NAME: ${{ github.ref_name }}
       run: |
         node checkJiraId.js
