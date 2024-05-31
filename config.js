@@ -1,6 +1,7 @@
 // jira-project-keys -> applications
 // applications -> github repos
 
+
 const projectApps = {
     'CM': ['Wizr'],
     'LS2': ['Eduvanz']
