@@ -1,9 +1,9 @@
-name: JIRA Issue Status Check
+name: Merge Description Issue Id's Check
 
 on: [pull_request]
 
 jobs:
-  build:
+  check-merge-ids:
     runs-on: ubuntu-latest
 
     steps:
