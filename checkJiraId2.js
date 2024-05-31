@@ -2,7 +2,6 @@ import fetch from 'node-fetch'
 import dotenv from 'dotenv';
 import {projectApps, appRepos, requiredStatus} from './config.js'
 
-
 dotenv.config();
 
 const email = process.env.EMAIL;
