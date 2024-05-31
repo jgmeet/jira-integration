@@ -21,15 +21,20 @@ jobs:
         PR_DESCRIPTION="${{ github.event.pull_request.body }}"
 
         # Extract all matching JIRA IDs
-        ISSUE_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX")
+        ISSUE_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | tr -d '#')
 
         if [ -z "$ISSUE_IDS" ]; then
           echo "ERROR: No valid JIRA issue identifiers found in PR description."
           exit 1
         fi
 
+        # Extract repo name
+        REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
+
         echo "JIRA issue IDs: $ISSUE_IDS"
+        echo "Repo Name: $REPO_NAME"
         echo "issue_ids=$ISSUE_IDS" >> $GITHUB_ENV
+        echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -44,6 +49,7 @@ jobs:
       env:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
-        ISSUE_IDs: ${{ env.issue_ids }}
+        ISSUE_IDS: ${{ env.issue_ids }}
+        REPO_NAME: ${{ env.repo_name }}
       run: |
         node checkJiraId2.js
