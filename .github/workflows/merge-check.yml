@@ -1,6 +1,9 @@
 name: Merge Description Issue Id's Check
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - main
 
 jobs:
   check-merge-ids:
