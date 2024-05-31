@@ -48,7 +48,7 @@ async function checkIdandRepoMapping() {
             console.error(`'${projectKey}' is not mapped to any application`);
             process.exit(1);
         }
-        // coment
+        
         const applications = projectApps[projectKey];
         var foundRepo = false;
         for(let i=0; i<applications.length; i++) {
