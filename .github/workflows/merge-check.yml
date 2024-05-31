@@ -6,27 +6,30 @@ on:
       - main
 
 jobs:
-  check-jira-issue:
+  merge-check-jira-issue:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository content
       uses: actions/checkout@v2
 
-    - name: Extract Jira Issue ID from PR title
+    - name: Extract Jira Issue ID from PR descritpion
       id: extract_issue_id
       run: |
-        JIRA_REGEX='\bCM-[0-9]+\b'
-        PR_TITLE="${{ github.event.pull_request.title }}"
-        
-        if echo "$PR_TITLE" | grep -iqE "$JIRA_REGEX"; then
-          ISSUE_ID=$(echo "$PR_TITLE" | grep -oE "$JIRA_REGEX" | head -n 1)
-          echo "JIRA issue ID: $ISSUE_ID"
-          echo "issue_id=$ISSUE_ID" >> $GITHUB_ENV
-        else
-          echo "ERROR: No valid JIRA issue identifier found in PR title."
+        JIRA_REGEX='#[A-Z]+-[0-9]+'
+        # Get the pull request description
+        PR_DESCRIPTION="${{ github.event.pull_request.body }}"
+
+        # Extract all matching JIRA IDs
+        ISSUE_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX")
+
+        if [ -z "$ISSUE_IDS" ]; then
+          echo "ERROR: No valid JIRA issue identifiers found in PR description."
           exit 1
         fi
+
+        echo "JIRA issue IDs: $ISSUE_IDS"
+        echo "issue_ids=$ISSUE_IDS" >> $GITHUB_ENV
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -36,20 +39,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Check Jira Issue Status
-      id: check_issue_status
+    - name: Check Jira Id's
+      id: get_issue_status
       env:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
-        ISSUE_ID: ${{ env.issue_id }}
-      run: node check_merge_title.js
-
-    - name: Mark PR check as passed or failed
-      if: always()
+        ISSUE_IDs: ${{ env.issue_ids }}
       run: |
-        if [ -f jira_issue_status_passed ]; then
-          echo "Jira issue status check passed."
-        else
-          echo "Jira issue status check failed."
-          exit 1
-        fi
+        node checkJiraId2.js
