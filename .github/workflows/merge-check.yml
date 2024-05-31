@@ -21,7 +21,7 @@ jobs:
         PR_DESCRIPTION="${{ github.event.pull_request.body }}"
 
         # Extract all matching JIRA IDs
-        ISSUE_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | tr -d '#')
+        ISSUE_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | tr -d '#' | paste -sd ',' -)
 
         if [ -z "$ISSUE_IDS" ]; then
           echo "ERROR: No valid JIRA issue identifiers found in PR description."

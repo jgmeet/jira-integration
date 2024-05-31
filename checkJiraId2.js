@@ -6,7 +6,7 @@ dotenv.config();
 
 const email = process.env.EMAIL;
 const apiToken = process.env.API_TOKEN;
-const issue_ids = process.env.ISSUE_IDS.split(' ');
+const issue_ids = process.env.ISSUE_IDS.split(',');
 const repo_name = process.env.REPO_NAME;
 
 async function checkIdandRepoMapping(issue_id) {
