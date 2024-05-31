@@ -27,7 +27,7 @@ const bodyData = JSON.stringify({
         ]
     }
 });
-
+// comment
 async function postComment() {
     console.log(`Issue ID: ${issue_id}`);
     try {
