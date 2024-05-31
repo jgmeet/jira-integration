@@ -47,6 +47,7 @@ jobs:
         REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
 
         echo "JIRA issue ID: $ISSUE_ID"
+        echo "Repo Name: $REPO_NAME"
         echo "issue_id=$ISSUE_ID" >> $GITHUB_ENV
         echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
 
