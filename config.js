@@ -11,6 +11,6 @@ const appRepos = {
     'Eduvanz': ['repo3', 'repo4', 'repo2']
 }
 
-const requiredStatus = ['approved', 'done', 'in progress']
+const requiredStatus = ['approved', 'pending approval', 'done', 'in progress']
 
 export {projectApps, appRepos, requiredStatus};
