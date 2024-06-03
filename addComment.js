@@ -5,10 +5,12 @@ dotenv.config();
 
 const email = process.env.EMAIL;
 const apiToken = process.env.API_TOKEN;
-const issue_id = process.env.ISSUE_ID;
-const commit_id = process.env.COMMIT_ID;
+const jira_ids = process.env.JIRRA_IDS.split(','); // jira project id's
+const cm_ids = process.env.CM_IDS.split(','); // change management id's
 const repo_name = process.env.REPO_NAME;
 const branch_name = process.env.BRANCH_NAME;
+const pr_number = process.env.PR_NUMBER;
+const pr_url = process.env.PR_URL;
 
 const bodyData = JSON.stringify({
     "body": {
@@ -20,15 +22,15 @@ const bodyData = JSON.stringify({
                 "content": [
                     {
                         "type": "text",
-                        "text": `Repository: ${repo_name}\nBranch: ${branch_name}\nCommit ID: ${commit_id}`
+                        "text": `Changes are merged successfully. Pull Request details:-\nRepository: ${repo_name}, Branch: ${branch_name}\nPR Number: ${pr_number}\nPR URL: ${pr_url}`
                     }
                 ]
             }
         ]
     }
 });
-// comment
-async function postComment() {
+
+async function postComment(issue_id) {
     console.log(`Issue ID: ${issue_id}`);
     try {
         const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/issue/${issue_id}/comment`, {
@@ -51,4 +53,11 @@ async function postComment() {
     }
 }
 
-postComment();
+// add comments
+for(let i=0; i<cm_ids.length; i++) {
+    await postComment(cm_ids[i]);
+}
+
+for(let i=0; i<jira_ids.length; i++) {
+    await postComment(jira_ids[i]);
+}
