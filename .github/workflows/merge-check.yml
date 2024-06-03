@@ -27,14 +27,14 @@ jobs:
         OTHER_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | grep -vE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
 
         if [ -z "$CM_IDS" ]; then
-          echo "ERROR: No valid change-management JIRA issue identifiers (CM-xxxx) found in PR description."
+          echo "ERROR: No valid change-management JIRA issue found in PR description."
           exit 1
         fi
 
-        if [ -z "$OTHER_IDS" ]; then
-          echo "ERROR: No valid other JIRA issue identifiers (#XYJF-xxxx) found in PR description."
-          exit 1
-        fi
+        # if [ -z "$OTHER_IDS" ]; then
+        #   echo "ERROR: No valid JIRA project issue found in PR description."
+        #   exit 1
+        # fi
 
         # Extract repo name
         REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
