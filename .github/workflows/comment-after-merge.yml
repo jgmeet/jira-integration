@@ -57,7 +57,6 @@ jobs:
         CM_IDS: ${{ env.cm_ids }}
         JIRA_IDS: ${{ env.jira_ids }}
         REPO_NAME: ${{ env.repo_name }}
-        PR_NUMBER: ${{ env.pr_number }}
         PR_URL: ${{ env.pr_url }}
         BRANCH_NAME: ${{ github.ref_name }}
       run: node addComment.js

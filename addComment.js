@@ -9,7 +9,6 @@ const apiToken = process.env.API_TOKEN;
 const cm_ids = process.env.CM_IDS.split(','); // change management id's
 const repo_name = process.env.REPO_NAME;
 const branch_name = process.env.BRANCH_NAME;
-const pr_number = process.env.PR_NUMBER;
 const pr_url = process.env.PR_URL;
 
 const bodyData = JSON.stringify({
@@ -22,7 +21,7 @@ const bodyData = JSON.stringify({
                 "content": [
                     {
                         "type": "text",
-                        "text": `Changes are merged successfully. Pull Request details:-\nRepository: ${repo_name}, Branch: ${branch_name}\nPR Number: ${pr_number}\nPR URL: ${pr_url}`
+                        "text": `Changes are merged successfully. Pull Request details:-\nRepository: ${repo_name}\nBranch: ${branch_name}\nPR URL: ${pr_url}`
                     }
                 ]
             }
