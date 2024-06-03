@@ -54,11 +54,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Check Jira IDs
+    - name: Check IDs
       env:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
         CM_IDS: ${{ env.cm_ids }}
         JIRRA_IDS: ${{ env.jira_ids }}
         REPO_NAME: ${{ env.repo_name }}
-      run: node checkJiraId2.js
+      run: node checkMergeDescriptionIDs.js
