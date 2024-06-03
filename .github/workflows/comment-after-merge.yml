@@ -4,6 +4,8 @@ on:
   pull_request:
     types:
       - closed
+    branches:
+      - main
 
 jobs:
   add-jira-comment-after-merge:
@@ -32,16 +34,6 @@ jobs:
         # Extract all matching JIRA IDs
         CM_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
         OTHER_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | grep -vE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
-
-        if [ -z "$CM_IDS" ]; then
-          echo "ERROR: No valid change-management JIRA issue identifiers (#CM-xxxx) found in PR description."
-          exit 1
-        fi
-
-        if [ -z "$OTHER_IDS" ]; then
-          echo "ERROR: No valid other JIRA issue identifiers (e.g., #FJ90-42, #XYZ123) found in PR description."
-          exit 1
-        fi
 
         # Extract repo name
         REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
