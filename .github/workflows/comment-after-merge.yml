@@ -1,0 +1,71 @@
+name: Add Jira Comment After Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  add-jira-comment-after-merge:
+    runs-on: ubuntu-latest
+
+    if: github.event.pull_request.merged == true
+
+    steps:
+    - name: Checkout repository content
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Extract Jira Issue ID from PR Description
+      id: extract_issue_ids
+      run: |
+        CM_REGEX='#CM-[0-9]+'
+        JIRA_REGEX='#([A-Z]+[0-9]*(-[0-9]+)?)'
+        
+        # Get the pull request description
+        PR_DESCRIPTION="${{ github.event.pull_request.body }}"
+
+        # Extract all matching JIRA IDs
+        CM_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
+        OTHER_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | grep -vE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
+
+        if [ -z "$CM_IDS" ]; then
+          echo "ERROR: No valid change-management JIRA issue identifiers (#CM-xxxx) found in PR description."
+          exit 1
+        fi
+
+        if [ -z "$OTHER_IDS" ]; then
+          echo "ERROR: No valid other JIRA issue identifiers (e.g., #FJ90-42, #XYZ123) found in PR description."
+          exit 1
+        fi
+
+        # Extract repo name
+        REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
+
+        echo "Change-management IDs: $CM_IDS"
+        echo "Other JIRA issue IDs: $OTHER_IDS"
+        echo "Repo Name: $REPO_NAME"
+        echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        echo "pr_url=${{ github.event.pull_request.html_url }}" >> $GITHUB_ENV
+        echo "cm_ids=$CM_IDS" >> $GITHUB_ENV
+        echo "jira_ids=$OTHER_IDS" >> $GITHUB_ENV
+        echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Add comment to Jira issues
+      env:
+        EMAIL: ${{ secrets.EMAIL }}
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        CM_IDS: ${{ env.cm_ids }}
+        JIRA_IDS: ${{ env.jira_ids }}
+        REPO_NAME: ${{ env.repo_name }}
+        PR_NUMBER: ${{ env.pr_number }}
+        PR_URL: ${{ env.pr_url }}
+        BRANCH_NAME: ${{ github.ref_name }}
+      run: node addComment.js
