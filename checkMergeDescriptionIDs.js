@@ -43,6 +43,12 @@ async function checkIdandRepoMapping(issue_id) {
         const status = dataFields.status.name.toLowerCase()
         const projectKey = dataFields.project.key
 
+        // Check if the issue status is not in the valid states
+        if (!requiredStatus.includes(status)) {
+            console.log(`Issue '${issue_id}' is in '${status}' status, can not proceed`);
+            return false;
+        }
+
         // check developer making changes to one of the defined repositories
         if(!(projectKey in projectApps)) {
             console.error(`'${projectKey}' is not mapped to any application`);
@@ -70,12 +76,6 @@ async function checkIdandRepoMapping(issue_id) {
         // for(let i=0; i<size; i++) {
         //     applications.push(applicationsField[i].value);
         // }
-        
-        // Check if the issue status is not in the valid states
-        if (!requiredStatus.includes(status)) {
-            console.log(`Issue '${issue_id}' is in '${status}' status, can not proceed`);
-            return false;
-        }
 
     } catch (error) {
         console.error(error);
