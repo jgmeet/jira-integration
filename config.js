@@ -11,6 +11,7 @@ const appRepos = {
     'Eduvanz': ['repo3', 'repo4', 'repo2']
 }
 
-const requiredStatus = ['approved', 'pending approval', 'done', 'in progress']
+const requiredStatus = ['approved']
+// ToDo requiredJiraIdStatus
 
 export {projectApps, appRepos, requiredStatus};
