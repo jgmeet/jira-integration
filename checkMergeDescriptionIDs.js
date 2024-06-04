@@ -94,6 +94,8 @@ for(let i=0; i<cm_ids.length; i++) {
     }
 }
 
+console.log('Request successful')
+
 // check provided JIRA ID's are correct
 // for(let i=0; i<jira_ids.length; i++) {
 //     const resp = await checkIdandRepoMapping(jira_ids[i]);
