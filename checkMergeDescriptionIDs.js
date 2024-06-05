@@ -65,6 +65,10 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
         if(isJiraIssue) applications = projectApps[projectKey];
         else {
             const applicationsField = dataFields.customfield_10334
+            if(applicationsField == null) {
+                console.log(`No Impacted Applications mentioned in the change request issue '${issue_id}'`)
+                process.exit(1)
+            }
             var size = Object.keys(applicationsField).length;
             for(let i=0; i<size; i++) {
                 applications.push(applicationsField[i].value);
