@@ -11,7 +11,18 @@ const repo_name = process.env.REPO_NAME;
 const branch_name = process.env.BRANCH_NAME;
 const pr_url = process.env.PR_URL;
 const developerUsername = process.env.DEVELOPER_USERNAME;
-const developerFullname = process.env.DEVELOPER_FULLNAME;
+
+const response = await fetch(`https://api.github.com/users/${developerUsername}`,{method: 'GET'});
+var developerFullname = 'not defined'
+if(!response.ok) {
+    console.log(`Developer's information not found!`)
+} else {
+    const developer = await response.json();
+    if(developer.name !== null) {
+        developerFullname = developer.name;
+    }
+}
+console.log(`Developer's name: ${developerFullname}`)
 
 const bodyDataCM = JSON.stringify({
     "body": {
@@ -76,10 +87,10 @@ async function postComment(issue_id, isJiraIssue) {
 }
 
 // add comments
-for(let i=0; i<cm_ids.length; i++) {
-    await postComment(cm_ids[i], false);
-}
+// for(let i=0; i<cm_ids.length; i++) {
+//     await postComment(cm_ids[i], false);
+// }
 
-for(let i=0; i<jira_ids.length; i++) {
-    await postComment(jira_ids[i], true);
-}
+// for(let i=0; i<jira_ids.length; i++) {
+//     await postComment(jira_ids[i], true);
+// }
