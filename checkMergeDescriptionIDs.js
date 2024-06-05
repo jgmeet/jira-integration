@@ -6,7 +6,7 @@ dotenv.config();
 
 const email = process.env.EMAIL;
 const apiToken = process.env.API_TOKEN;
-const jira_ids = process.env.JIRRA_IDS.split(','); // jira project id's
+const jira_ids = process.env.JIRA_IDS.split(','); // jira project id's
 const cm_ids = process.env.CM_IDS.split(','); // change management id's
 const repo_name = process.env.REPO_NAME;
 
@@ -34,7 +34,7 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
 
         // Check if data.fields is undefined or empty
         if (!data.fields) {
-            console.log('Issue not found!');
+            console.log('Issue not found or Invalid credentials');
             return false;
         }
 
@@ -88,7 +88,7 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
             return false;
         }
 
-        // check that Jira Id's provided in PR description
+        // ToDo -> check that Jira Id's provided in PR description
         // are exact with the ones mentioned in CM issue
         
 

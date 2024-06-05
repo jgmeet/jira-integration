@@ -59,6 +59,6 @@ jobs:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
         CM_IDS: ${{ env.cm_ids }}
-        JIRRA_IDS: ${{ env.jira_ids }}
+        JIRA_IDS: ${{ env.jira_ids }}
         REPO_NAME: ${{ env.repo_name }}
       run: node checkMergeDescriptionIDs.js

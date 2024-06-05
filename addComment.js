@@ -87,10 +87,10 @@ async function postComment(issue_id, isJiraIssue) {
 }
 
 // add comments
-// for(let i=0; i<cm_ids.length; i++) {
-//     await postComment(cm_ids[i], false);
-// }
+for(let i=0; i<cm_ids.length; i++) {
+    await postComment(cm_ids[i], false);
+}
 
-// for(let i=0; i<jira_ids.length; i++) {
-//     await postComment(jira_ids[i], true);
-// }
+for(let i=0; i<jira_ids.length; i++) {
+    await postComment(jira_ids[i], true);
+}

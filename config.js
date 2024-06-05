@@ -17,7 +17,5 @@ const appRepos = {
     'Merchant Portal': ['cis-backend'],
 }
 
-// const requiredStatus = ['approved']
-// ToDo requiredJiraIdStatus
 
 export {projectApps, appRepos};
