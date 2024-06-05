@@ -61,7 +61,7 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
         }
         
         // checking repo mapping for jira id's and CM id's
-        var applications;
+        var applications = [];
         if(isJiraIssue) applications = projectApps[projectKey];
         else {
             const applicationsField = dataFields.customfield_10334
