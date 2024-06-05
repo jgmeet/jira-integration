@@ -5,13 +5,15 @@ dotenv.config();
 
 const email = process.env.EMAIL;
 const apiToken = process.env.API_TOKEN;
-// const jira_ids = process.env.JIRRA_IDS.split(','); // jira project id's
+const jira_ids = process.env.JIRRA_IDS.split(','); // jira project id's
 const cm_ids = process.env.CM_IDS.split(','); // change management id's
 const repo_name = process.env.REPO_NAME;
 const branch_name = process.env.BRANCH_NAME;
 const pr_url = process.env.PR_URL;
+const developerUsername = process.env.DEVELOPER_USERNAME;
+const developerFullname = process.env.DEVELOPER_FULLNAME;
 
-const bodyData = JSON.stringify({
+const bodyDataCM = JSON.stringify({
     "body": {
         "type": "doc",
         "version": 1,
@@ -21,7 +23,7 @@ const bodyData = JSON.stringify({
                 "content": [
                     {
                         "type": "text",
-                        "text": `Changes are merged successfully. Pull Request details:-\nRepository: ${repo_name}\nBranch: ${branch_name}\nPR URL: ${pr_url}`
+                        "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}\nBranch: ${branch_name}\nPR URL: ${pr_url}\nWorked on Jira issues: ${jira_ids}`
                     }
                 ]
             }
@@ -29,8 +31,29 @@ const bodyData = JSON.stringify({
     }
 });
 
-async function postComment(issue_id) {
+const bodyDataJiraIssue = JSON.stringify({
+    "body": {
+        "type": "doc",
+        "version": 1,
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}\nBranch: ${branch_name}\nPR URL: ${pr_url}\nChange-Management request id: ${cm_ids}`
+                    }
+                ]
+            }
+        ]
+    }
+});
+
+async function postComment(issue_id, isJiraIssue) {
     console.log(`Issue ID: ${issue_id}`);
+    var bodyData = bodyDataCM
+    if(isJiraIssue) bodyData = bodyDataJiraIssue
+
     try {
         const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/issue/${issue_id}/comment`, {
             method: 'POST',
@@ -54,9 +77,9 @@ async function postComment(issue_id) {
 
 // add comments
 for(let i=0; i<cm_ids.length; i++) {
-    await postComment(cm_ids[i]);
+    await postComment(cm_ids[i], false);
 }
 
-// for(let i=0; i<jira_ids.length; i++) {
-//     await postComment(jira_ids[i]);
-// }
+for(let i=0; i<jira_ids.length; i++) {
+    await postComment(jira_ids[i], true);
+}

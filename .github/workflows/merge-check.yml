@@ -1,4 +1,4 @@
-name: Merge Description Issue Id's Check
+name: Check for CM and Jira issue IDs provided in PR description
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository content
       uses: actions/checkout@v4
 
-    - name: Extract Jira Issue IDs from PR description
+    - name: Extract CM and Jira Issue IDs from PR description
       id: extract_issue_ids
       run: |
         CM_REGEX='#CM-[0-9]+'
@@ -27,14 +27,14 @@ jobs:
         OTHER_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | grep -vE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
 
         if [ -z "$CM_IDS" ]; then
-          echo "ERROR: No valid change-management JIRA issue found in PR description."
+          echo "ERROR: No change-management issue id found in PR description."
           exit 1
         fi
 
-        # if [ -z "$OTHER_IDS" ]; then
-        #   echo "ERROR: No valid JIRA project issue found in PR description."
-        #   exit 1
-        # fi
+        if [ -z "$OTHER_IDS" ]; then
+          echo "ERROR: No JIRA project issue found in PR description."
+          exit 1
+        fi
 
         # Extract repo name
         REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
