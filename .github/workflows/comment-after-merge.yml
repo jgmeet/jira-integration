@@ -26,7 +26,7 @@ jobs:
       id: extract_issue_ids
       run: |
         CM_REGEX='#CM-[0-9]+'
-        JIRA_REGEX='#([A-Z]+[0-9]*(-[0-9]+)?)'
+        JIRA_REGEX='#([A-Z]+[A-Z0-9]*-[0-9]+)'
         
         # Get the pull request description
         PR_DESCRIPTION="${{ github.event.pull_request.body }}"
