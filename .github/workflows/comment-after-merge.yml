@@ -39,8 +39,8 @@ jobs:
         REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
 
         # Extract developer's username and full name
-        DEVELOPER_USERNAME="${{ github.actor }}"
-        DEVELOPER_FULLNAME="${{ github.event.pull_request.user.login }}"
+        DEVELOPER_USERNAME="${{ github.event.pull_request.user.login }}"
+        DEVELOPER_FULLNAME="${{ github.event.pull_request.user.name }}"
 
         echo "Change-management IDs: $CM_IDS"
         echo "Other JIRA issue IDs: $OTHER_IDS"
