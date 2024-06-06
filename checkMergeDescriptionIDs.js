@@ -34,7 +34,7 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
 
         // Check if data.fields is undefined or empty
         if (!data.fields) {
-            console.log('Issue not found or Invalid credentials');
+            console.log('Issue does not exist or Invalid credentials');
             return false;
         }
 
@@ -88,9 +88,28 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
             return false;
         }
 
-        // ToDo -> check that Jira Id's provided in PR description
-        // are exact with the ones mentioned in CM issue
-        
+        // check that Jira Id's provided in PR description
+        // are exact with the ones mentioned in CM linked issues
+        const issueLinks = dataFields.issuelinks
+        const numOfLinkedIssues = Object.keys(issueLinks).length
+        if(numOfLinkedIssues == 0) {
+            console.log('Linked issues not mentioned in Change Management request')
+            return false;
+        }
+
+        const linked_issues = []
+        for(let i=0; i<numOfLinkedIssues; i++) {
+            linked_issues.push(issueLinks[i].inwardIssue.key)
+        }
+
+        jira_ids.sort();
+        linked_issues.sort();
+        const equalValues = (jira_ids.length === linked_issues.length) && jira_ids.every((value, index) => value === linked_issues[index])
+
+        if(!equalValues) {
+            console.log(`Jira id/s: '${jira_ids}' is/are not matching the Linked issue ids: '${linked_issues}'`);
+            return false;
+        }
 
     } catch (error) {
         console.error(error);
