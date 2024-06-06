@@ -34,7 +34,7 @@ const bodyDataCM = JSON.stringify({
                 "content": [
                     {
                         "type": "text",
-                        "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}\nBranch: ${branch_name}\nPR URL: ${pr_url}\nWorked on Jira issues: ${jira_ids}`
+                        "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}, Branch: ${branch_name}\nPR URL: ${pr_url}\nWorked on Jira issues: ${jira_ids}`
                     }
                 ]
             }
@@ -52,7 +52,7 @@ const bodyDataJiraIssue = JSON.stringify({
                 "content": [
                     {
                         "type": "text",
-                        "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}\nBranch: ${branch_name}\nPR URL: ${pr_url}\nChange-Management request id: ${cm_ids}`
+                        "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}, Branch: ${branch_name}\nPR URL: ${pr_url}\nChange-Management request id: ${cm_ids}`
                     }
                 ]
             }
