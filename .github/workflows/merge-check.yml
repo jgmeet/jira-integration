@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repository content
+      uses: actions/checkout@v4
+    
     - name: Getting CM and Jira Issue IDs from PR description
       id: extract_repo_details
       run: |
