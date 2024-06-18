@@ -138,5 +138,3 @@ for(let i=0; i<jira_ids.length; i++) {
 }
 
 console.log('Verification Successful')
-
-

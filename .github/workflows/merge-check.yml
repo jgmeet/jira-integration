@@ -1,9 +1,17 @@
 name: Check for CM and Jira issue IDs provided in PR description
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      branches:
+        required: true
+        type: array
+      email:
+        required: true
+        type: string
+      api_token:
+        required: true
+        type: string
 
 jobs:
   check-merge-ids:
