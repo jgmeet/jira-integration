@@ -2,47 +2,25 @@ name: Check for CM and Jira issue IDs provided in PR description
 
 on:
   workflow_call:
-
+    inputs:
+      cm_ids:
+        required: true
+      jira_ids:
+        required: true
+      repo_name:
+        required: true
+      
 jobs:
   check-merge-ids:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository content
-      uses: actions/checkout@v4
-
-    - name: Extract CM and Jira Issue IDs from PR description
-      id: extract_issue_ids
+    - name: Getting CM and Jira Issue IDs from PR description
+      id: extract_repo_details
       run: |
-        CM_REGEX='#CM-[0-9]+'
-        JIRA_REGEX='#([A-Z]+[A-Z0-9]*-[0-9]+)'
-
-        # Get the pull request description
-        PR_DESCRIPTION="${{ github.event.pull_request.body }}"
-
-        # Extract all matching JIRA IDs
-        CM_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
-        OTHER_IDS=$(echo "$PR_DESCRIPTION" | grep -oE "$JIRA_REGEX" | grep -vE "$CM_REGEX" | tr -d '#' | paste -sd ',' -)
-
-        if [ -z "$CM_IDS" ]; then
-          echo "ERROR: No change-management issue id found in PR description."
-          exit 1
-        fi
-
-        if [ -z "$OTHER_IDS" ]; then
-          echo "ERROR: No JIRA project issue found in PR description."
-          exit 1
-        fi
-
-        # Extract repo name
-        REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
-
-        echo "Change-management IDs: $CM_IDS"
-        echo "Other JIRA issue IDs: $OTHER_IDS"
-        echo "Repo Name: $REPO_NAME"
-        echo "cm_ids=$CM_IDS" >> $GITHUB_ENV
-        echo "jira_ids=$OTHER_IDS" >> $GITHUB_ENV
-        echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
+        echo "cm_ids=${{ inputs.cm_ids }}" >> $GITHUB_ENV
+        echo "jira_ids=${{ inputs.jira_ids }}" >> $GITHUB_ENV
+        echo "repo_name=${{ inputs.repo_name }}" >> $GITHUB_ENV
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
