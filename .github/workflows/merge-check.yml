@@ -20,6 +20,9 @@ jobs:
     steps:
     - name: Checkout repository content
       uses: actions/checkout@v4
+      with:
+        repository: jgmeet/jira-integration
+        path: jira-integration
     
     - name: Getting CM and Jira Issue IDs from PR description
       id: extract_repo_details
@@ -38,6 +41,7 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+      working-directory: ./jira-integration
 
     - name: Check IDs
       env:
@@ -47,3 +51,4 @@ jobs:
         JIRA_IDS: ${{ env.jira_ids }}
         REPO_NAME: ${{ env.repo_name }}
       run: node checkMergeDescriptionIDs.js
+      working-directory: ./jira-integration
