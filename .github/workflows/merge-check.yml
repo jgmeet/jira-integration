@@ -5,10 +5,13 @@ on:
     inputs:
       cm_ids:
         required: true
+        type: string
       jira_ids:
         required: true
+        type: string
       repo_name:
         required: true
+        type: string
       
 jobs:
   check-merge-ids:
