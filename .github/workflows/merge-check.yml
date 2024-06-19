@@ -29,11 +29,6 @@ jobs:
           exit 1
         fi
 
-        # if [ -z "$OTHER_IDS" ]; then
-        #   echo "ERROR: No JIRA project issue found in PR description."
-        #   exit 1
-        # fi
-
         # Extract repo name
         REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
 
