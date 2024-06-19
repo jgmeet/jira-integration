@@ -4,7 +4,7 @@ on:
   workflow_call:
       
 jobs:
-  check-merge-ids:
+  check-pull_request:
     runs-on: ubuntu-latest
 
     steps:
