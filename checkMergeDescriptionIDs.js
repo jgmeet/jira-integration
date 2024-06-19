@@ -1,14 +1,69 @@
-import fetch from 'node-fetch'
-import dotenv from 'dotenv';
-import {projectApps, appRepos} from './config.js'
+const fetch = require('node-fetch')
+const dotenv = require('dotenv')
 
 dotenv.config();
 
 const email = process.env.EMAIL;
 const apiToken = process.env.API_TOKEN;
-const jira_ids = process.env.JIRA_IDS.split(','); // jira project id's
-const cm_ids = process.env.CM_IDS.split(','); // change management id's
+var jira_ids = process.env.JIRA_IDS; // Jira project IDs
+const cm_ids = process.env.CM_IDS.split(','); // Change management IDs
 const repo_name = process.env.REPO_NAME;
+
+var ids = cm_ids
+const numOfCM_IDS = cm_ids.length;
+
+if(jira_ids) {
+    jira_ids = jira_ids.split(',');
+    ids = cm_ids.concat(jira_ids)
+    jira_ids.sort(); // sorted to check if linked issues in Change Request
+    // match jira ids provided in PR description
+}
+
+async function checkMapping(asset, isJiraIssue) {
+    try {
+        const resp = await fetch(`https://eduvanz.atlassian.net/rest/api/3/search?jql=project=CMDB`,{
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${Buffer.from(
+                `${email}:${apiToken}`
+                ).toString('base64')}`,
+                'Accept': 'application/json'
+            }
+        })
+
+        if(!resp.ok) {
+            console.log('Request failed!')
+            return false;
+        }
+
+        const response = await resp.json()
+        // console.log(response.issues.fields)
+        const assets = response.issues
+        for(let i=0; i<assets.length; i++) {
+            const status = assets[i].fields.status.statusCategory.name
+            if(status !== 'Done') {
+                continue;
+            }
+
+            const application = assets[i].fields.customfield_10342
+            const projectID = assets[i].fields.customfield_10344
+            const githubRepo = assets[i].fields.customfield_10341
+            if(!isJiraIssue && application == asset) {
+                if(githubRepo == repo_name) return true;
+            }
+            if(isJiraIssue && projectID == asset) {
+                if(githubRepo == repo_name) return true;
+            }
+        }
+
+        console.log(`Mapping of '${asset}' to repo '${repo_name}' not found in CMDB`)
+
+    } catch (error) {
+        console.error(`Request failed: ${error}`);
+    }
+
+    return false;
+}
 
 async function checkIdandRepoMapping(issue_id, isJiraIssue) {
 
@@ -50,91 +105,101 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
             return false;
         }
         if(isJiraIssue && statusCategory !== 'in progress') {
-            console.log(`For issue-id '${issue_id}', statusCategory is '${status}', can not proceed`);
-            return false;
-        }
-
-        // check developer making changes to one of the defined repositories
-        if(!(projectKey in projectApps)) {
-            console.error(`Project Id '${projectKey}' is not mapped to any application, check config.js file for Project keys to applications mapping`);
+            console.log(`For issue-id '${issue_id}', statusCategory is '${statusCategory}', can not proceed`);
             return false;
         }
         
         // checking repo mapping for jira id's and CM id's
-        var applications = [];
-        if(isJiraIssue) applications = projectApps[projectKey];
+        var foundRepo = false;
+        if(isJiraIssue) {
+            foundRepo = await checkMapping(projectKey, true);
+        }
         else {
-            const applicationsField = dataFields.customfield_10334
+            const applicationsField = dataFields.customfield_10337
             if(applicationsField == null) {
                 console.log(`No Impacted Applications mentioned in the change request issue '${issue_id}'`)
-                process.exit(1)
+                return false;
             }
-            var size = Object.keys(applicationsField).length;
-            for(let i=0; i<size; i++) {
-                applications.push(applicationsField[i].value);
-            }
-        }
 
-        var foundRepo = false;
-        for(let i=0; i<applications.length; i++) {
-            if(appRepos[applications[i]].includes(repo_name)) {
-                foundRepo = true;
-                break;
+            const size = Object.keys(applicationsField).length;
+            for(let i=0; i<size; i++) {
+                foundRepo = await checkMapping(applicationsField[i].value, false);
+                if(foundRepo) break;
             }
         }
 
         if(!foundRepo) {
-            console.error(`Repository '${repo_name}' is not mapped to project key '${projectKey}'`);
             return false;
         }
 
-        // check that Jira Id's provided in PR description
-        // are exact with the ones mentioned in CM linked issues
-        const issueLinks = dataFields.issuelinks
-        const numOfLinkedIssues = Object.keys(issueLinks).length
-        if(numOfLinkedIssues == 0) {
-            console.log('Linked issues not mentioned in Change Management request')
-            return false;
-        }
+        if(!isJiraIssue) {
+            // if request type is emergency, then no need to check
+            // for jira id's in description
+            const requestType = dataFields.customfield_10333;
+            if(requestType !== null && requestType.value == 'Emergency') {
+                return true;
+            }
 
-        const linked_issues = []
-        for(let i=0; i<numOfLinkedIssues; i++) {
-            linked_issues.push(issueLinks[i].inwardIssue.key)
-        }
+            // check that Jira Id's provided in PR description
+            // are exact with the ones mentioned in CM linked issues
+            const issueLinks = dataFields.issuelinks
+            const numOfLinkedIssues = Object.keys(issueLinks).length
+            if(numOfLinkedIssues == 0) {
+                console.log('Linked issues not mentioned in Change Management request')
+                return false;
+            }
+    
+            const linked_issues = []
+            for(let i=0; i<numOfLinkedIssues; i++) {
+                if(issueLinks[i].inwardIssue !== undefined) {
+                    const linked_issue = issueLinks[i].inwardIssue.key;
+                    if(!linked_issues.includes(linked_issue)) {
+                        linked_issues.push(linked_issue)
+                    }
+                }
+                if(issueLinks[i].outwardIssue !== undefined) {
+                    const linked_issue = issueLinks[i].outwardIssue.key;
+                    if(!linked_issues.includes(linked_issue)) {
+                        linked_issues.push(linked_issue)
+                    }
+                }
+            }
 
-        jira_ids.sort();
-        linked_issues.sort();
-        const equalValues = (jira_ids.length === linked_issues.length) && jira_ids.every((value, index) => value === linked_issues[index])
+            // jira_ids.sort();
+            linked_issues.sort();
+            const equalValues = (jira_ids.length === linked_issues.length) && jira_ids.every((value, index) => value === linked_issues[index])
 
-        if(!equalValues) {
-            console.log(`Jira id/s: '${jira_ids}' is/are not matching the Linked issue ids: '${linked_issues}'`);
-            return false;
+            if(!equalValues) {
+                console.log(`Jira id/s: '${jira_ids}' is/are not matching the Linked issue ids: '${linked_issues}'`);
+                return false;
+            }
         }
 
     } catch (error) {
-        console.error(error);
+        console.error(`Request failed: ${error}`);
         return false;
     }
 
     return true;
 }
 
-// check provided CM ID's are correct
-for(let i=0; i<cm_ids.length; i++) {
-    const resp = await checkIdandRepoMapping(cm_ids[i], false);
-    if(!resp) {
-        console.log(`Check failed at issue id: ${cm_ids[i]}`)
-        process.exit(1);
+
+async function main() {
+    console.log('Checking Issue IDs...');
+
+    for(let i=0; i<ids.length; i++) {
+        isJiraIssue = true;
+        if(i<numOfCM_IDS) isJiraIssue = false;
+        issue_id = ids[i];
+
+        console.log('checking issue id: ', issue_id);
+        const response = await checkIdandRepoMapping(issue_id, isJiraIssue);
+        if(!response) {
+            console.log(`Check failed at issue id: ${issue_id}`)
+            process.exit(1);
+        }
+        console.log(`Check successful for issue id: ${issue_id}`)
     }
 }
 
-// check provided JIRA ID's are correct
-for(let i=0; i<jira_ids.length; i++) {
-    const resp = await checkIdandRepoMapping(jira_ids[i], true);
-    if(!resp) {
-        console.log(`Check failed at issue id: ${jira_ids[i]}`)
-        process.exit(1);
-    }
-}
-
-console.log('Verification Successful')
+main();
