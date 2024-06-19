@@ -67,6 +67,7 @@ async function checkMapping(asset, isJiraIssue) {
             console.log(`Mapping of '${asset}' to repo '${repo_name}' not found in CMDB...`)
         } else  {
             console.log(`Mapping of '${asset}' to repo '${repo_name}' found...`)
+            return true;
         }
 
     } catch (error) {
