@@ -39,6 +39,7 @@ async function checkMapping(asset, isJiraIssue) {
         const response = await resp.json()
         // console.log(response.issues.fields)
         const assets = response.issues
+        var foundMapping = false;
         for(let i=0; i<assets.length; i++) {
             const status = assets[i].fields.status.statusCategory.name
             if(status !== 'Done') {
@@ -49,14 +50,24 @@ async function checkMapping(asset, isJiraIssue) {
             const projectID = assets[i].fields.customfield_10344
             const githubRepo = assets[i].fields.customfield_10341
             if(!isJiraIssue && application == asset) {
-                if(githubRepo == repo_name) return true;
+                if(githubRepo == repo_name) {
+                    foundMapping = true;
+                    break;
+                }
             }
             if(isJiraIssue && projectID == asset) {
-                if(githubRepo == repo_name) return true;
+                if(githubRepo == repo_name) {
+                    foundMapping = true;
+                    break;
+                }
             }
         }
 
-        console.log(`Mapping of '${asset}' to repo '${repo_name}' not found in CMDB`)
+        if(!foundMapping) {
+            console.log(`Mapping of '${asset}' to repo '${repo_name}' not found in CMDB...`)
+        } else  {
+            console.log(`Mapping of '${asset}' to repo '${repo_name}' found...`)
+        }
 
     } catch (error) {
         console.error(`Request failed: ${error}`);
@@ -129,7 +140,10 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
         }
 
         if(!foundRepo) {
+            console.log('You are not making changes in correct repo!')
             return false;
+        } else {
+            console.log('You are making changes in correct repo...')
         }
 
         if(!isJiraIssue) {
