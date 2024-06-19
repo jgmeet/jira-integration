@@ -27,9 +27,6 @@ jobs:
     - name: Getting CM and Jira Issue IDs from PR description
       id: extract_repo_details
       run: |
-        echo "Change-management IDs: ${{ inputs.cm_ids }}"
-        echo "Other JIRA issue IDs: ${{ inputs.jira_ids }}"
-        echo "Repo Name: ${{ inputs.repo_name }}"
         echo "cm_ids=${{ inputs.cm_ids }}" >> $GITHUB_ENV
         echo "jira_ids=${{ inputs.jira_ids }}" >> $GITHUB_ENV
         echo "repo_name=${{ inputs.repo_name }}" >> $GITHUB_ENV
