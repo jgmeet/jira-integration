@@ -1,14 +1,10 @@
 name: Add Jira Comment After Successful Merge
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+  workflow_call:
 
 jobs:
-  add-jira-comment-after-merge:
+  add-jira-comment:
     runs-on: ubuntu-latest
 
     if: github.event.pull_request.merged == true
@@ -17,12 +13,7 @@ jobs:
     - name: Checkout repository content
       uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Extract Jira Issue ID from PR Description
+    - name: Extract Issue IDs from PR Description
       id: extract_issue_ids
       run: |
         CM_REGEX='#CM-[0-9]+'
@@ -51,10 +42,23 @@ jobs:
         echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
         echo "developer_username=$DEVELOPER_USERNAME" >> $GITHUB_ENV
 
+    - name: Checkout jira-integration repository content
+      uses: actions/checkout@v4
+      with:
+        repository: jgmeet/jira-integration
+        path: jira-integration
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
     - name: Install dependencies
       run: npm install
+      working-directory: ./jira-integration
 
-    - name: Add comment to Jira issues
+
+    - name: Adding comment to issues
       env:
         EMAIL: ${{ secrets.EMAIL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
@@ -65,3 +69,4 @@ jobs:
         BRANCH_NAME: ${{ github.ref_name }}
         DEVELOPER_USERNAME: ${{ env.developer_username }}
       run: node addComment.js
+      working-directory: ./jira-integration
