@@ -84,7 +84,8 @@ async function getReqApplications() {
         const assets = response.issues
         for(let i=0; i<assets.length; i++) {
             const application = assets[i].fields.customfield_10342
-            if(application != null) {
+            const status = assets[i].fields.status.statusCategory.name
+            if(status == 'Done' && application != null) {
                 reqApplications.push(application)
             }
         }
