@@ -47,15 +47,28 @@ async function main() {
                 {
                     "type": "paragraph",
                     "content": [
-                        {
-                            "type": "text",
-                            "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}, Branch: ${branch_name}\nPR URL: ${pr_url}\nWorked on Jira issues: ${jira_ids}`
-                        }
+                        { "type": "text", "text": "Changes are merged successfully. Pull Request details:-" },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "Developer username: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${developerUsername}` },
+                        { "type": "text", "text": ", fullname: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${developerFullname}` },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "Repository: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${repo_name}` },
+                        { "type": "text", "text": ", Branch: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${branch_name}` },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "PR URL: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${pr_url}` },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "Worked on Jira issues: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${jira_ids}` }
                     ]
                 }
             ]
         }
-    });
+    });    
 
     const bodyDataJiraIssue = JSON.stringify({
         "body": {
@@ -65,15 +78,28 @@ async function main() {
                 {
                     "type": "paragraph",
                     "content": [
-                        {
-                            "type": "text",
-                            "text": `Changes are merged successfully. Pull Request details:-\nDeveloper username: ${developerUsername}, fullname: ${developerFullname}\nRepository: ${repo_name}, Branch: ${branch_name}\nPR URL: ${pr_url}\nChange-Management request id: ${cm_ids}`
-                        }
+                        { "type": "text", "text": "Changes are merged successfully. Pull Request details:-" },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "Developer username: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${developerUsername}` },
+                        { "type": "text", "text": ", fullname: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${developerFullname}` },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "Repository: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${repo_name}` },
+                        { "type": "text", "text": ", Branch: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${branch_name}` },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "PR URL: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${pr_url}` },
+                        { "type": "hardBreak" },
+                        { "type": "text", "text": "Change Requests: ", "marks": [{ "type": "strong" }] },
+                        { "type": "text", "text": `${cm_ids}` }
                     ]
                 }
             ]
         }
-    });
+    });    
 
     const bodyData = JSON.stringify({
         "transition": {
@@ -87,9 +113,6 @@ async function main() {
         var bodyData = bodyDataCM
         if(isJiraIssue) {
             bodyData = bodyDataJiraIssue
-            console.log('this is a jira issue')
-        } else {
-            console.log('this is not a jira issue')
         }
 
         try {
