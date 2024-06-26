@@ -1,5 +1,5 @@
-import fetch from 'node-fetch'
-import dotenv from 'dotenv'
+const fetch = require('node-fetch')
+const dotenv = require('dotenv')
 
 dotenv.config()
 
@@ -134,12 +134,17 @@ async function getCurApplications() {
     }
 }
 
-await getReqApplications();
-await getCurApplications();
+async function main() {
 
-// add application options that are in CMDB but not in Change-Management options
-for(let i=0; i<reqApplications.length; i++) {
-    if(!curApplications.includes(reqApplications[i])) {
-        await addOption(reqApplications[i])
+    await getReqApplications();
+    await getCurApplications();
+
+    // add application options that are in CMDB but not in Change-Management options
+    for(let i=0; i<reqApplications.length; i++) {
+        if(!curApplications.includes(reqApplications[i])) {
+            await addOption(reqApplications[i])
+        }
     }
 }
+
+main();

@@ -10,6 +10,16 @@ jobs:
     steps:
     - name: Checkout repository content
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the branch for the pull request
+
+    - name: Ensure workflow.yml has not been changed
+      run: |
+        # Compare base branch and head branch to find changes
+        if git diff --name-only origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }} | grep -q '^.github/workflows/workflow.yml$'; then
+          echo "Error: workflow.yml file has been modified in this pull request."
+          exit 1
+        fi
 
     - name: Extract CM and Jira Issue IDs from PR description
       id: extract_issue_ids
