@@ -10,6 +10,8 @@ jobs:
     steps:
     - name: Checkout repository content
       uses: actions/checkout@v4
+      with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Get all changes in .github/workflows/workflow.yml
       id: changed-files
