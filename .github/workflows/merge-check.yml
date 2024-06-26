@@ -24,7 +24,7 @@ jobs:
       if: steps.changed-files.outputs.any_changed == 'true'
       run: |
         echo "Error: .github/workflows/workflow.yml file has been modified in this pull request."
-        exit 1
+        echo "isWorkflowYmlChanged=true" >> $GITHUB_ENV
     
     - name: Ensure workflow.yml has not been changed
       run: |
@@ -84,5 +84,6 @@ jobs:
         CM_IDS: ${{ env.cm_ids }}
         JIRA_IDS: ${{ env.jira_ids }}
         REPO_NAME: ${{ env.repo_name }}
+        IS_WORKFLOW_YML_CHANGED: ${{ env.isWorkflowYmlChanged }}
       run: node checkMergeDescriptionIDs.js
       working-directory: ./jira-integration

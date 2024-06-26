@@ -8,6 +8,7 @@ const apiToken = process.env.API_TOKEN;
 var jira_ids = process.env.JIRA_IDS; // Jira project IDs
 const cm_ids = process.env.CM_IDS.split(','); // Change management IDs
 const repo_name = process.env.REPO_NAME;
+const workflow_changed = process.env.IS_WORKFLOW_YML_CHANGED;
 
 var ids = cm_ids
 const numOfCM_IDS = cm_ids.length;
@@ -200,6 +201,13 @@ async function checkIdandRepoMapping(issue_id, isJiraIssue) {
 
 
 async function main() {
+
+    // fail the check and report on slack if workflow.yml is changed
+    if(workflow_changed) {
+        console.log('In the .js file')
+        process.exit(1);
+    }
+
     console.log('Checking Issue IDs...');
 
     for(let i=0; i<ids.length; i++) {
