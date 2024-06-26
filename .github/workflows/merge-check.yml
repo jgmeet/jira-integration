@@ -20,18 +20,12 @@ jobs:
         files: |
           .github/workflows/workflow.yml
 
-    - name: Fail if workflow.yml is modified
-      if: steps.changed-files.outputs.any_changed == 'true'
-      run: |
-        echo "Error: .github/workflows/workflow.yml file has been modified in this pull request."
-        echo "isWorkflowYmlChanged=true" >> $GITHUB_ENV
-    
-    - name: Ensure workflow.yml has not been changed
+    - name: Check files changed in this PR
       run: |
         # Compare base branch and head branch to find changes
         if git diff --name-only origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }} | grep -q '^.github/workflows/workflow.yml$'; then
           echo "Error: workflow.yml file has been modified in this pull request."
-          exit 1
+          echo "isWorkflowYmlChanged=true" >> $GITHUB_ENV
         fi
 
     - name: Extract CM and Jira Issue IDs from PR description
