@@ -10,9 +10,20 @@ jobs:
     steps:
     - name: Checkout repository content
       uses: actions/checkout@v4
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the branch for the pull request
+      
+    - name: Get all changes in .github/workflows/workflow.yml
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            .github/workflows/workflow.yml
 
+      - name: Fail if workflow.yml is modified
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "Error: .github/workflows/workflow.yml file has been modified in this pull request."
+          exit 1
+    
     - name: Ensure workflow.yml has not been changed
       run: |
         # Compare base branch and head branch to find changes
