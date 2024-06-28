@@ -25,7 +25,7 @@ jobs:
         # Compare base branch and head branch to find changes
         if git diff --name-only origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }} | grep -q '^.github/workflows/workflow.yml$'; then
           echo "Error: workflow.yml file has been modified in this pull request."
-          echo "isWorkflowYmlChanged=true" >> $GITHUB_ENV
+          echo "isWorkflowYmlChanged='true'" >> $GITHUB_ENV
         fi
 
     - name: Extract CM and Jira Issue IDs from PR description
@@ -52,6 +52,7 @@ jobs:
         echo "Change-management IDs: $CM_IDS"
         echo "Other JIRA issue IDs: $OTHER_IDS"
         echo "Repo Name: $REPO_NAME"
+        echo "pr_url=${{ github.event.pull_request.html_url }}" >> $GITHUB_ENV
         echo "cm_ids=$CM_IDS" >> $GITHUB_ENV
         echo "jira_ids=$OTHER_IDS" >> $GITHUB_ENV
         echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
@@ -71,6 +72,18 @@ jobs:
       run: npm install
       working-directory: ./jira-integration
 
+    - name: Send Slack Notifications
+      env:
+        EMAIL: ${{ secrets.EMAIL }}
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        CM_IDS: ${{ env.cm_ids }}
+        PR_URL: ${{ env.pr_url }}
+        IS_WORKFLOW_YML_CHANGED: ${{ env.isWorkflowYmlChanged || 'false'}}
+        WORKFLOW_RUN: ${{ 'opened' }}
+      run: node slackNotifications.js
+      working-directory: ./jira-integration
+
     - name: Check IDs
       env:
         EMAIL: ${{ secrets.EMAIL }}
@@ -78,6 +91,5 @@ jobs:
         CM_IDS: ${{ env.cm_ids }}
         JIRA_IDS: ${{ env.jira_ids }}
         REPO_NAME: ${{ env.repo_name }}
-        IS_WORKFLOW_YML_CHANGED: ${{ env.isWorkflowYmlChanged }}
       run: node checkMergeDescriptionIDs.js
       working-directory: ./jira-integration

@@ -57,6 +57,16 @@ jobs:
       run: npm install
       working-directory: ./jira-integration
 
+    - name: Send Slack Notifications
+      env:
+        EMAIL: ${{ secrets.EMAIL }}
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        CM_IDS: ${{ env.cm_ids }}
+        PR_URL: ${{ env.pr_url }}
+        WORKFLOW_RUN: ${{ 'merged' }}
+      run: node slackNotifications.js
+      working-directory: ./jira-integration
 
     - name: Adding comment to issues
       env:
