@@ -99,7 +99,7 @@ async function main() {
         await getSlackChannels(cm_ids[i]);
     }
 
-    console.log('slack channels: ', slackChannels)
+    // console.log('slack channels: ', slackChannels)
 
     for(let i=0; i<slackChannels.length; i++) {
         const message_OpenedPR = {
