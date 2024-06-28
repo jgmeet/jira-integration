@@ -13,8 +13,6 @@ const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
 const workflowRun = process.env.WORKFLOW_RUN;
 const slackChannels = [];
 
-console.log('workflowChanged: ', workflowChanged);
-console.log('workflowRun: ', workflowRun);
 
 async function getChannels(asset) {
 
@@ -88,7 +86,7 @@ async function getSlackChannels(issue_id) {
 
 
 const message_EditedWorkflow = {
-    channel: '#pr-check',
+    channel: '#infra-internal',
     username: 'saamri',
     icon_emoji: 'sweat_smile',
     text: `Alert: workflow.yml file has been modified in the pull request!`,
@@ -100,7 +98,6 @@ async function main() {
     for(let i=0; i<cm_ids.length; i++) {
         await getSlackChannels(cm_ids[i]);
     }
-    console.log('slackChannels: ', slackChannels);
 
     for(let i=0; i<slackChannels.length; i++) {
         const message_OpenedPR = {
