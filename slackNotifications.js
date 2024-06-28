@@ -41,7 +41,7 @@ async function getChannels(asset) {
         const application = assets[i].fields.customfield_10342
         const slackChannel = assets[i].fields.customfield_10351
 
-        if(application == asset && !slackChannels.includes(slackChannel)) {
+        if(slackChannel !== null && application == asset && !slackChannels.includes(slackChannel)) {
             slackChannels.push(slackChannel)
         }
     }
