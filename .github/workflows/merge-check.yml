@@ -24,7 +24,7 @@ jobs:
       run: |
         # Compare base branch and head branch to find changes
         if git diff --name-only origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }} | grep -q '^.github/workflows/workflow.yml$'; then
-          echo "isWorkflowYmlChanged='yes'" >> $GITHUB_ENV
+          echo "isWorkflowYmlChanged=yes" >> $GITHUB_ENV
         fi
 
     - name: Extract CM and Jira Issue IDs from PR description
