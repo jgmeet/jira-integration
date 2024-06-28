@@ -99,35 +99,37 @@ async function main() {
         await getSlackChannels(cm_ids[i]);
     }
 
-    for(let i=0; i<slackChannels.length; i++) {
-        const message_OpenedPR = {
-            channel: slackChannels[i],
-            username: 'saamri',
-            icon_emoji: 'sweat_smile',
-            text: `A new Pull Request is raised!`,
-            blocks: [ {type: "section",text: {type: "mrkdwn",text: `*A new Pull Request is raised!*\n<${pr_url}|View PR>`}}]
-        }
+    console.log('slack channels: ', slackChannels)
+
+    // for(let i=0; i<slackChannels.length; i++) {
+    //     const message_OpenedPR = {
+    //         channel: slackChannels[i],
+    //         username: 'saamri',
+    //         icon_emoji: 'sweat_smile',
+    //         text: `A new Pull Request is raised!`,
+    //         blocks: [ {type: "section",text: {type: "mrkdwn",text: `*A new Pull Request is raised!*\n<${pr_url}|View PR>`}}]
+    //     }
         
-        const message_MergedPR = {
-            channel: slackChannels[i],
-            username: 'saamri',
-            icon_emoji: 'sweat_smile',
-            text: `A new Pull Request is merged!`,
-            blocks: [ {type: "section",text: {type: "mrkdwn",text: `*A new Pull Request is merged!*\n<${pr_url}|View PR>`}}]
-        }
+    //     const message_MergedPR = {
+    //         channel: slackChannels[i],
+    //         username: 'saamri',
+    //         icon_emoji: 'sweat_smile',
+    //         text: `A new Pull Request is merged!`,
+    //         blocks: [ {type: "section",text: {type: "mrkdwn",text: `*A new Pull Request is merged!*\n<${pr_url}|View PR>`}}]
+    //     }
 
-        const webhook = new IncomingWebhook(slackWebhookUrl);
-        var message = message_MergedPR;
-        if(workflowRun == 'opened') message = message_OpenedPR;
-        await webhook.send(message);
-    }
+    //     const webhook = new IncomingWebhook(slackWebhookUrl);
+    //     var message = message_MergedPR;
+    //     if(workflowRun == 'opened') message = message_OpenedPR;
+    //     await webhook.send(message);
+    // }
 
-    if(workflowChanged == 'yes') {
-        const webhook = new IncomingWebhook(slackWebhookUrl);
-        await webhook.send(message_EditedWorkflow);
-        console.log('Error: workflow.yml file has been modified in this PR')
-        process.exit(1);
-    }
+    // if(workflowChanged == 'yes') {
+    //     const webhook = new IncomingWebhook(slackWebhookUrl);
+    //     await webhook.send(message_EditedWorkflow);
+    //     console.log('Error: workflow.yml file has been modified in this PR')
+    //     process.exit(1);
+    // }
 }
 
 main();
