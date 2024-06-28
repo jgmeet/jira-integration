@@ -120,12 +120,12 @@ async function main() {
         }
 
         const webhook = new IncomingWebhook(slackWebhookUrl);
-        var message = message_OpenedPR;
-        if(workflowRun == 'merged') message = message_MergedPR;
+        var message = message_MergedPR;
+        if(workflowRun == 'opened') message = message_OpenedPR;
         await webhook.send(message);
     }
 
-    if(workflowChanged == 'true') {
+    if(workflowChanged == 'yes') {
         const webhook = new IncomingWebhook(slackWebhookUrl);
         await webhook.send(message_EditedWorkflow);
         console.log('Error: workflow.yml file has been modified in this PR')
