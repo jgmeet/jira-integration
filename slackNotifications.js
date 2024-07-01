@@ -88,9 +88,9 @@ async function getSlackChannels(issue_id) {
 const message_EditedWorkflow = {
     channel: '#infra-internal',
     username: 'saamri',
-    icon_emoji: 'sweat_smile',
-    text: `Alert: workflow.yml file has been modified in the pull request!`,
-    blocks: [{type: "section",text: {type: "mrkdwn",text: `*Alert:* workflow.yml file has been modified in the pull request!\n<${pr_url}|View PR>`}}]
+    icon_emoji: 'neutral_face',
+    text: `Alert: workflow.yml file has been edited in the pull request!`,
+    blocks: [{type: "section",text: {type: "mrkdwn",text: `*Alert: workflow.yml file* has been modified in the pull request!\n<${pr_url}|View PR>`}}]
 }
 
 async function main() {
@@ -105,15 +105,15 @@ async function main() {
         const message_OpenedPR = {
             channel: slackChannels[i],
             username: 'saamri',
-            icon_emoji: 'sweat_smile',
+            icon_emoji: 'neutral_face',
             text: `A new Pull Request is raised!`,
-            blocks: [ {type: "section",text: {type: "mrkdwn",text: `*A new Pull Request is raised!*\n<${pr_url}|View PR>`}}]
+            blocks: [ {type: "section",text: {type: "mrkdwn",text: `A new Pull Request is raised!\n<${pr_url}|View PR>`}}]
         }
         
         const message_MergedPR = {
             channel: slackChannels[i],
             username: 'saamri',
-            icon_emoji: 'sweat_smile',
+            icon_emoji: 'neutral_face',
             text: `A new Pull Request is merged!`,
             blocks: [ {type: "section",text: {type: "mrkdwn",text: `*A new Pull Request is merged!*\n<${pr_url}|View PR>`}}]
         }
@@ -127,7 +127,7 @@ async function main() {
     if(workflowChanged == 'yes') {
         const webhook = new IncomingWebhook(slackWebhookUrl);
         await webhook.send(message_EditedWorkflow);
-        console.log('Error: workflow.yml file has been modified in this PR')
+        console.log('Error: workflow.yml file has been edited in this PR')
         process.exit(1);
     }
 }
