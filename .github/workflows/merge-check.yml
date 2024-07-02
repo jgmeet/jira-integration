@@ -58,7 +58,7 @@ jobs:
     - name: Checkout jira-integration repository content
       uses: actions/checkout@v4
       with:
-        repository: eduvanz/jira-integration
+        repository: eduvanz-team/jira-integration
         path: jira-integration
 
     - name: Set up Node.js
