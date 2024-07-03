@@ -10,6 +10,7 @@ const cm_ids = process.env.CM_IDS.split(','); // change management id's
 const repo_name = process.env.REPO_NAME;
 const branch_name = process.env.BRANCH_NAME;
 const pr_url = process.env.PR_URL;
+const jira_url = process.env.JIRA_URL;
 const developerUsername = process.env.DEVELOPER_USERNAME;
 
 var ids = cm_ids
@@ -37,7 +38,6 @@ async function main() {
     }
 
     await getDeveloperName();
-    console.log(`Developer's name: ${developerFullname}`)
 
     const bodyDataCM = JSON.stringify({
         "body": {
@@ -116,7 +116,7 @@ async function main() {
         }
 
         try {
-            const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/issue/${issue_id}/comment`, {
+            const response = await fetch(`${jira_url}/rest/api/3/issue/${issue_id}/comment`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Basic ${Buffer.from(`${email}:${apiToken}`).toString('base64')}`,
@@ -138,7 +138,7 @@ async function main() {
 
     async function transitionIssue(issue_id) {
         try {
-            const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/issue/${issue_id}/transitions`,{
+            const response = await fetch(`${jira_url}/rest/api/3/issue/${issue_id}/transitions`,{
                 method: 'POST',
                 headers: {
                     'Authorization': `Basic ${Buffer.from(`${email}:${apiToken}`).toString('base64')}`,

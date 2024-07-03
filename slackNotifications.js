@@ -11,12 +11,15 @@ const pr_url = process.env.PR_URL
 const workflowChanged = process.env.IS_WORKFLOW_YML_CHANGED;
 const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
 const workflowRun = process.env.WORKFLOW_RUN;
+const slackInfraChannel = process.env.SLACK_INFRA_CHANNEL;
+const userName = process.env.SLACK_AGENT_NAME;
+const jira_url = process.env.JIRA_URL;
 const slackChannels = [];
 
 
 async function getChannels(asset) {
 
-    const resp = await fetch(`https://eduvanz.atlassian.net/rest/api/3/search?jql=project=CMDB`,{
+    const resp = await fetch(`${jira_url}/rest/api/3/search?jql=project=CMDB`,{
         method: 'GET',
         headers: {
             'Authorization': `Basic ${Buffer.from(
@@ -48,7 +51,7 @@ async function getChannels(asset) {
 }
 
 async function getSlackChannels(issue_id) {
-    const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/issue/${issue_id}`,{
+    const response = await fetch(`${jira_url}/rest/api/3/issue/${issue_id}`,{
         method: 'GET',
         headers: {
             'Authorization': `Basic ${Buffer.from(
@@ -86,8 +89,8 @@ async function getSlackChannels(issue_id) {
 
 
 const message_EditedWorkflow = {
-    channel: '#infra-internal',
-    username: 'saamri',
+    channel: slackInfraChannel,
+    username: userName,
     icon_emoji: 'neutral_face',
     text: `Alert: workflow.yml file has been edited in the pull request!`,
     blocks: [{type: "section",text: {type: "mrkdwn",text: `*Alert: workflow.yml file* has been modified in the pull request!\n<${pr_url}|View PR>`}}]
@@ -99,12 +102,10 @@ async function main() {
         await getSlackChannels(cm_ids[i]);
     }
 
-    // console.log('slack channels: ', slackChannels)
-
     for(let i=0; i<slackChannels.length; i++) {
         const message_OpenedPR = {
             channel: slackChannels[i],
-            username: 'saamri',
+            username: userName,
             icon_emoji: 'neutral_face',
             text: `A new Pull Request is raised!`,
             blocks: [ {type: "section",text: {type: "mrkdwn",text: `A new Pull Request is raised!\n<${pr_url}|View PR>`}}]
@@ -112,7 +113,7 @@ async function main() {
         
         const message_MergedPR = {
             channel: slackChannels[i],
-            username: 'saamri',
+            username: userName,
             icon_emoji: 'neutral_face',
             text: `A new Pull Request is merged!`,
             blocks: [ {type: "section",text: {type: "mrkdwn",text: `*A new Pull Request is merged!*\n<${pr_url}|View PR>`}}]

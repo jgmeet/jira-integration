@@ -10,21 +10,27 @@ jobs:
     steps:
     - name: Checkout repository content
       uses: actions/checkout@v4
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Get all changes in .github/workflows/workflow.yml
-      id: changed-files
-      uses: tj-actions/changed-files@v40
-      with:
-        files: |
-          .github/workflows/workflow.yml
+    - name: Install GitHub CLI
+      run: sudo apt-get install gh -y
 
-    - name: Check if workflow.yml is edited
-      if: steps.changed-files.outputs.any_changed == 'true'
+    - name: Check if workflow.yml is edited/deleted
+      id: check-deletion
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "isWorkflowYmlChanged=yes" >> $GITHUB_ENV
-
+        # Get the list of changed files in the PR
+        gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path' > changed_files.txt
+        
+        if grep -q '^.github/workflows/workflow.yml$' changed_files.txt; then
+          if ! test -f ".github/workflows/workflow.yml"; then
+            echo "workflow.yml is deleted in this PR."
+            echo "isWorkflowYmlChanged=yes" >> $GITHUB_ENV
+          else
+            echo "workflow.yml is edited but not deleted in this PR."
+            echo "isWorkflowYmlChanged=yes" >> $GITHUB_ENV
+          fi
+        fi
 
     - name: Extract CM and Jira Issue IDs from PR description
       id: extract_issue_ids

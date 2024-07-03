@@ -5,6 +5,7 @@ dotenv.config()
 
 const email = process.env.EMAIL;
 const apiToken = process.env.API_TOKEN;
+const jira_url = process.env.JIRA_URL;
 
 
 async function addOption(application) {
@@ -18,7 +19,7 @@ async function addOption(application) {
     })
 
     try {
-        const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/field/customfield_10337/context/10571/option`, {
+        const response = await fetch(`${jira_url}/rest/api/3/field/customfield_10337/context/10571/option`, {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${Buffer.from(`${email}:${apiToken}`).toString('base64')}`,
@@ -42,7 +43,7 @@ async function addOption(application) {
 
 async function deleteOption(optionId) {
     try {
-        const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/field/customfield_10337/context/10571/option/${optionId}`, {
+        const response = await fetch(`${jira_url}/rest/api/3/field/customfield_10337/context/10571/option/${optionId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Basic ${Buffer.from(`${email}:${apiToken}`).toString('base64')}`,
@@ -65,7 +66,7 @@ const reqApplications = [];
 async function getReqApplications() {
 
     try {
-        const resp = await fetch(`https://eduvanz.atlassian.net/rest/api/3/search?jql=project=CMDB`,{
+        const resp = await fetch(`${jira_url}/rest/api/3/search?jql=project=CMDB`,{
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${Buffer.from(
@@ -102,7 +103,7 @@ const curApplications = [];
 async function getCurApplications() {
     
     try {
-        const resp = await fetch(`https://eduvanz.atlassian.net/rest/api/3/field/customfield_10337/context/10571/option`, {
+        const resp = await fetch(`${jira_url}/rest/api/3/field/customfield_10337/context/10571/option`, {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${Buffer.from(

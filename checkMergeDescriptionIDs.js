@@ -8,6 +8,7 @@ const apiToken = process.env.API_TOKEN;
 var jira_ids = process.env.JIRA_IDS; // Jira project IDs
 const cm_ids = process.env.CM_IDS.split(','); // Change management IDs
 const repo_name = process.env.REPO_NAME;
+const jira_url = process.env.JIRA_URL;
 
 var ids = cm_ids
 const numOfCM_IDS = cm_ids.length;
@@ -21,7 +22,7 @@ if(jira_ids) {
 
 async function checkMapping(asset, isJiraIssue) {
     try {
-        const resp = await fetch(`https://eduvanz.atlassian.net/rest/api/3/search?jql=project=CMDB`,{
+        const resp = await fetch(`${jira_url}/rest/api/3/search?jql=project=CMDB`,{
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${Buffer.from(
@@ -80,7 +81,7 @@ async function checkMapping(asset, isJiraIssue) {
 async function checkIdandRepoMapping(issue_id, isJiraIssue) {
 
     try {
-        const response = await fetch(`https://eduvanz.atlassian.net/rest/api/3/issue/${issue_id}`,{
+        const response = await fetch(`${jira_url}/rest/api/3/issue/${issue_id}`,{
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${Buffer.from(
